@@ -1,9 +1,13 @@
 import express from 'express';
 import Users from '../controllers/usersController';
-import { User, UserToInsert } from '../types';
+import { User, UserToInsert, UserToSend } from '../types';
 // import { v4 as uuid } from 'uuid';
 import { ensureUserSchema } from '../middleware/usersMiddleware';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
+const SECRET = process.env.JWT_SECRET as string;
 
 const router = express.Router();
 
@@ -16,8 +20,13 @@ router.post('/register', ensureUserSchema, async (_req, res, next) => {
       password: hash,
     };
     const newUser: User = await Users.create(userToCreate);
-    console.log('creating new user', newUser);
-    res.status(201).json(newUser);
+    const token = generateToken(newUser);
+    const userToSend: UserToSend = { ...newUser };
+    delete userToSend.password;
+    res.status(201).json({
+      user: userToSend,
+      token,
+    });
   } catch (err) {
     next(err);
   }
@@ -26,10 +35,23 @@ router.post('/register', ensureUserSchema, async (_req, res, next) => {
 router.get('/', async (_req, res, next) => {
   try {
     const users = await Users.findAll();
-    res.status(200).json(users);
+    const usersClean = [...users];
+    usersClean.forEach((user: UserToSend) => delete user.password);
+    res.status(200).json(usersClean);
   } catch (err) {
     next(err);
   }
 });
+
+function generateToken(user: User) {
+  const payload = {
+    subject: user.id,
+    username: user.username,
+  };
+  const options = {
+    expiresIn: '1w',
+  };
+  return jwt.sign(payload, SECRET, options);
+}
 
 export default router;

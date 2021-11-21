@@ -22,6 +22,13 @@ export class BadRequest extends HTTPError {
   }
 }
 
+export class Forbidden extends HTTPError {
+  constructor(message?: string, userMessage?: string) {
+    const errMsg = message || 'The client does not have access rights to this content.';
+    super(errMsg, 403, 'Forbidden', userMessage);
+  }
+}
+
 export class NotFound extends HTTPError {
   constructor(message?: string, userMessage?: string) {
     const errMsg = message || 'Entity not found.';

@@ -3,8 +3,6 @@ import { BadRequest } from '../httpErrors';
 import { UserNewInput } from '../types';
 
 const ensureUserSchema: RequestHandler = async (req, res, next) => {
-  console.log('incoming request to create user', req.body);
-
   try {
     const { username, password } = req.body;
 

@@ -8,6 +8,13 @@ export interface User {
 
 export type UserNewInput = Pick<User, 'username' | 'password'>;
 export type UserToInsert = Omit<User, 'created_at' | 'updated_at' | 'id'>;
+export type UserToSend = {
+  id: string;
+  username: string;
+  password?: string;
+  created_at: string;
+  updated_at: string;
+};
 
 export interface Post {
   id: string;
