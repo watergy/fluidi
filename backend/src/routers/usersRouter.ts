@@ -1,17 +1,19 @@
 import express from 'express';
 import Users from '../controllers/usersController';
-import { User, UserToCreate } from '../types';
-import { v4 as uuid } from 'uuid';
+import { User, UserToInsert } from '../types';
+// import { v4 as uuid } from 'uuid';
 import { ensureUserSchema } from '../middleware/usersMiddleware';
+import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 
 router.post('/register', ensureUserSchema, async (_req, res, next) => {
   try {
     const user = res.locals.newUser;
-    const userToCreate: UserToCreate = {
+    const hash = bcrypt.hashSync(user.password);
+    const userToCreate: UserToInsert = {
       username: user.username,
-      id: uuid(),
+      password: hash,
     };
     const newUser: User = await Users.create(userToCreate);
     console.log('creating new user', newUser);

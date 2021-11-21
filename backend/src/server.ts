@@ -3,7 +3,7 @@ import http from 'http';
 import dotenv from 'dotenv';
 import { errorHandler } from './middleware/errorHandler';
 import UsersRouter from './routers/usersRouter';
-import PostsRouter from './routers/postsRouter';
+// import PostsRouter from './routers/postsRouter';
 import cors from 'cors';
 dotenv.config();
 
@@ -18,7 +18,7 @@ app.get('/', (_req, res) => {
 });
 
 app.use('/users', UsersRouter);
-app.use('/posts', PostsRouter);
+// app.use('/posts', PostsRouter);
 
 app.use(errorHandler);
 

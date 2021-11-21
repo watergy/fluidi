@@ -1,12 +1,13 @@
 export interface User {
   id: string;
   username: string;
+  password: string;
   created_at: string;
   updated_at: string;
 }
 
-export type UserNew = Pick<User, 'username'>;
-export type UserToCreate = Omit<User, 'created_at' | 'updated_at'>;
+export type UserNewInput = Pick<User, 'username' | 'password'>;
+export type UserToInsert = Omit<User, 'created_at' | 'updated_at' | 'id'>;
 
 export interface Post {
   id: string;
