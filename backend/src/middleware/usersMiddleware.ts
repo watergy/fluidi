@@ -1,6 +1,8 @@
 import { RequestHandler } from 'express';
-import { BadRequest } from '../httpErrors';
+import { BadRequest, NotFound } from '../httpErrors';
 import { UserNewInput } from '../types';
+import Users from '../controllers/usersController';
+import bcrypt from 'bcryptjs';
 
 const ensureUserSchema: RequestHandler = async (req, res, next) => {
   try {
@@ -17,7 +19,7 @@ const ensureUserSchema: RequestHandler = async (req, res, next) => {
         username,
         password,
       };
-      res.locals.newUser = user;
+      res.locals.user = user;
       next();
     }
   } catch (err) {
@@ -25,4 +27,21 @@ const ensureUserSchema: RequestHandler = async (req, res, next) => {
   }
 };
 
-export { ensureUserSchema };
+const validateUser: RequestHandler = async (req, res, next) => {
+  try {
+    const user = res.locals.user;
+    const foundUser = await Users.findOne({ username: user.username });
+    if (!foundUser) {
+      throw new NotFound(`User with username:${user.username} not found.`);
+    } else if (bcrypt.compareSync(user.password, foundUser.password)) {
+      res.locals.foundUser = foundUser;
+      next();
+    } else {
+      throw new BadRequest('Invalid credentials');
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export { ensureUserSchema, validateUser };
