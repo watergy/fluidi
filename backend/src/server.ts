@@ -1,7 +1,9 @@
 import express, { Express } from 'express';
 import http from 'http';
 import dotenv from 'dotenv';
+import restricted from './middleware/restricted';
 import { errorHandler } from './middleware/errorHandler';
+import AuthRouter from './routers/authRouter';
 import UsersRouter from './routers/usersRouter';
 // import PostsRouter from './routers/postsRouter';
 import cors from 'cors';
@@ -17,7 +19,8 @@ app.get('/', (_req, res) => {
   res.send('Server is up and running...');
 });
 
-app.use('/users', UsersRouter);
+app.use('/auth', AuthRouter);
+app.use('/users', restricted, UsersRouter);
 // app.use('/posts', PostsRouter);
 
 app.use(errorHandler);
